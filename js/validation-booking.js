@@ -4,38 +4,73 @@ $(document).ready(function(){
 
         var error = false;
 
-        // Grab all form values
+        // Grab all form values from multi-step form
         var formData = {
-            shipper_name: $('#shipper_name').val().trim(),
-            shipper_email: $('#shipper_email').val().trim(),
-            shipper_phone: $('#shipper_phone').val().trim(),
-            shipper_address: $('#shipper_address').val().trim(),
-            shipper_city: $('#shipper_city').val().trim(),
-            shipper_country: $('#shipper_country').val().trim(),
-            receiver_name: $('#receiver_name').val().trim(),
-            receiver_address: $('#receiver_address').val().trim(),
-            receiver_city: $('#receiver_city').val().trim(),
-            receiver_country: $('#receiver_country').val().trim(),
-            shipment_type: $('#shipment_type').val(),
-            origin_airport: $('#origin_airport').val(),
-            destination_airport: $('#destination_airport').val(),
-            pieces: $('#pieces').val(),
-            weight: $('#weight').val(),
-            dimensions: $('#dimensions').val(),
-            cargo_description: $('#cargo_description').val(),
-            transport_mode: $('#transport_mode').val(),
-            incoterms: $('#incoterms').val(),
-            delivery_speed: $('#delivery_speed').val(),
-            insurance: $('#insurance').val(),
-            special: $('#special').val(),
-            pickup_date: $('#pickup_date').val(),
-            pickup_time: $('#pickup_time').val(),
-            delivery_deadline: $('#delivery_deadline').val(),
-            payment_method: $('#payment_method').val(),
-            billing_address: $('#billing_address').val(),
-            notes: $('#notes').val(),
-            agree_terms: $('#agree_terms').is(':checked')
+            // Step 1: Shipment Details
+            origin: $('#origin').val().trim(),
+            destination: $('#destination').val().trim(),
+            service: $('#service').val().trim(),
+            goods_type: $('#goods_type').val().trim(),
+            package_type: $('#package_type').val().trim(),
+            dimension_unit: $('input[name="dimension_unit"]:checked').val(),
+            weight_unit: $('input[name="weight_unit"]:checked').val(),
+            goods_value: $('#goods_value').val().trim(),
+            
+            // Dynamic cargo dimensions (multiple packages)
+            // Collect all package data (up to 10 packages)
         };
+
+        // Add dynamic package data
+        for (var i = 1; i <= 10; i++) {
+            if ($('#pieces_' + i).length && $('#pieces_' + i).val()) {
+                formData['pieces_' + i] = $('#pieces_' + i).val().trim();
+                formData['length_' + i] = $('#length_' + i).val().trim();
+                formData['width_' + i] = $('#width_' + i).val().trim();
+                formData['height_' + i] = $('#height_' + i).val().trim();
+                formData['weight_' + i] = $('#weight_' + i).val().trim();
+                formData['weight_type_' + i] = $('input[name="weight_type_' + i + '"]:checked').val();
+                formData['stackable_' + i] = $('#stackable_' + i).is(':checked') ? 'Yes' : 'No';
+                formData['turnable_' + i] = $('#turnable_' + i).is(':checked') ? 'Yes' : 'No';
+            }
+        }
+
+        // Step 2: Shipper Information
+        formData.shipper_name = $('#shipper_name').val().trim();
+        formData.shipper_email = $('#shipper_email').val().trim();
+        formData.shipper_phone = $('#shipper_phone').val().trim();
+        formData.shipper_address = $('#shipper_address').val().trim();
+        formData.shipper_city = $('#shipper_city').val().trim();
+        formData.shipper_country = $('#shipper_country').val().trim();
+
+        // Step 3: Receiver Information
+        formData.receiver_name = $('#receiver_name').val().trim();
+        formData.receiver_email = $('#receiver_email').val().trim();
+        formData.receiver_phone = $('#receiver_phone').val().trim();
+        formData.receiver_address = $('#receiver_address').val().trim();
+        formData.receiver_city = $('#receiver_city').val().trim();
+        formData.receiver_country = $('#receiver_country').val().trim();
+
+        // Step 4: Logistics Options
+        formData.transport_mode = $('#transport_mode').val();
+        formData.incoterms = $('#incoterms').val();
+        formData.delivery_speed = $('#delivery_speed').val();
+        formData.insurance = $('input[name="insurance"]:checked').val();
+        
+        // Special handling (multiple checkboxes)
+        var specialHandling = [];
+        $('input[name="special[]"]:checked').each(function() {
+            specialHandling.push($(this).val());
+        });
+        formData.special = specialHandling.join(', ');
+
+        // Step 5: Schedule & Payment
+        formData.pickup_date = $('#pickup_date').val();
+        formData.pickup_time = $('#pickup_time').val();
+        formData.delivery_deadline = $('#delivery_deadline').val();
+        formData.payment_method = $('#payment_method').val();
+        formData.billing_address = $('#billing_address').val().trim();
+        formData.notes = $('#notes').val().trim();
+        formData.agree_terms = $('#agree_terms').is(':checked');
 
         // Reset errors on click
         $('#shipper_name,#shipper_email,#shipper_phone').on('click', function(){
